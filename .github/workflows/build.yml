@@ -1,4 +1,4 @@
-name: Compilar EmociGat Real
+name: Compilar EmociGat Definitivo
 
 on: [push]
 
@@ -14,15 +14,15 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Organizar archivos y compilar APK
+    - name: Organizar y compilar
       run: |
         mkdir -p app/src/main/java/com/invertirpro/emocigat
         mkdir -p app/src/main/assets
         
-        # Mueve tus archivos reales al directorio de Android
-        cp *.java app/src/main/java/com/invertirpro/emocigat/ || true
-        cp AndroidManifest.xml app/src/main/ || true
-        cp emociones.json app/src/main/assets/ || true
+        # Mover archivos si existen a su ruta correcta
+        find . -maxdepth 1 -name "*.java" -exec cp {} app/src/main/java/com/invertirpro/emocigat/ \;
+        [ -f AndroidManifest.xml ] && cp AndroidManifest.xml app/src/main/
+        [ -f emociones.json ] && cp emociones.json app/src/main/assets/
         
         echo "include ':app'" > settings.gradle
         
@@ -51,5 +51,6 @@ jobs:
 
     - uses: actions/upload-artifact@v4
       with:
-        name: EmociGat-APK-Real
+        name: EmociGat-APK-Final
         path: app/build/outputs/apk/debug/app-debug.apk
+        
