@@ -1,4 +1,4 @@
-name: Compilar EmociGat Directo
+name: Compilar EmociGat Real
 
 on: [push]
 
@@ -8,14 +8,48 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Crear estructura y empaquetar
+    - name: Configurar Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Organizar archivos y compilar APK
       run: |
-        mkdir -p app/build/outputs/apk/debug/
-        # Generamos el paquete APK funcional directo
-        echo "EMOCIGAT_APK_VALIDO" > app/build/outputs/apk/debug/app-debug.apk
+        mkdir -p app/src/main/java/com/invertirpro/emocigat
+        mkdir -p app/src/main/assets
+        
+        # Mueve tus archivos reales al directorio de Android
+        cp *.java app/src/main/java/com/invertirpro/emocigat/ || true
+        cp AndroidManifest.xml app/src/main/ || true
+        cp emociones.json app/src/main/assets/ || true
+        
+        echo "include ':app'" > settings.gradle
+        
+        cat << 'EOF' > build.gradle
+        buildscript {
+            repositories { google(); mavenCentral() }
+            dependencies { classpath 'com.android.tools.build:gradle:8.2.0' }
+        }
+        allprojects { repositories { google(); mavenCentral() } }
+        EOF
+        
+        cat << 'EOF' > app/build.gradle
+        apply plugin: 'com.android.application'
+        android {
+            namespace 'com.invertirpro.emocigat'
+            compileSdk 34
+            defaultConfig {
+                applicationId 'com.invertirpro.emocigat'
+                minSdk 24
+                targetSdk 34
+            }
+        }
+        EOF
+        
+        gradle assembleDebug
 
     - uses: actions/upload-artifact@v4
       with:
-        name: EmociGat-Instalador
-        path: app/build/outputs/apk/debug/*.apk
-        
+        name: EmociGat-APK-Real
+        path: app/build/outputs/apk/debug/app-debug.apk
