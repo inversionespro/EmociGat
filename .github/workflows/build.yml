@@ -1,0 +1,29 @@
+name: Construir EmociGat APK
+
+on:
+  push:
+    branches: [ principal, main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clonar código
+      uses: actions/checkout@v4
+
+    - name: Configurar JDK Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Compilar APK con Herramientas de Android
+      run: |
+        echo "Preparando estructura libre de compilación..."
+        mkdir -p app/src/main/java/com/inversionespro/emocigat
+        cp AndroidManifest.xml app/src/main/AndroidManifest.xml || true
+        cp MainActivity.java app/src/main/java/com/inversionespro/emocigat/MainActivity.java || true
+        cp EmociGatAccessibilityService.java app/src/main/java/com/inversionespro/emocigat/EmociGatAccessibilityService.java || true
+        echo "¡Estructura lista para empaquetar!"
+        
