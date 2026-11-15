@@ -18,12 +18,24 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Compilar APK con Herramientas de Android
+    - name: Crear estructura de proyecto Android
       run: |
-        echo "Preparando estructura libre de compilación..."
         mkdir -p app/src/main/java/com/inversionespro/emocigat
-        cp AndroidManifest.xml app/src/main/AndroidManifest.xml || true
-        cp MainActivity.java app/src/main/java/com/inversionespro/emocigat/MainActivity.java || true
-        cp EmociGatAccessibilityService.java app/src/main/java/com/inversionespro/emocigat/EmociGatAccessibilityService.java || true
-        echo "¡Estructura lista para empaquetar!"
-        
+        cp AndroidManifest.xml app/src/main/AndroidManifest.xml
+        cp MainActivity.java app/src/main/java/com/inversionespro/emocigat/MainActivity.java
+        cp EmociGatAccessibilityService.java app/src/main/java/com/inversionespro/emocigat/EmociGatAccessibilityService.java
+
+    - name: Generar APK de depuración con Gradle
+      run: |
+        echo "include ':app'" > settings.gradle
+        echo "apply plugin: 'com.android.application'" > app/build.gradle
+        echo "android { namespace 'com.inversionespro.emocigat'; compileSdk 34; defaultConfig { applicationId 'com.inversionespro.emocigat'; minSdk 24; targetSdk 34; versionCode 1; versionName '1.0'; } }" >> app/build.gradle
+        # Generar gradle wrapper básico de compilación libre
+        gradle wrapper
+        ./gradlew assembleDebug
+
+    - name: Subir archivo APK generado
+      uses: actions/upload-artifact@v4
+      with:
+        name: EmociGat-APK
+        path: app/build/outputs/apk/debug/app-debug.apk
