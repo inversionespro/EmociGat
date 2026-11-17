@@ -19,12 +19,12 @@ jobs:
         mkdir -p app/src/main/java/com/inversionespro/emocigat
         mkdir -p app/src/main/assets
         
-        # Copiar todos los archivos .java de la raíz a la ruta correcta
+        # Mover archivos al directorio correcto si existen en la raíz
         find . -maxdepth 1 -name "*.java" -exec cp {} app/src/main/java/com/inversionespro/emocigat/ \;
         [ -f AndroidManifest.xml ] && cp AndroidManifest.xml app/src/main/AndroidManifest.xml
         [ -f emociones.json ] && cp emociones.json app/src/main/assets/emociones.json
         
-        # Configuración limpia de Gradle
+        # Configuración clásica y compatible de Gradle
         echo "include ':app'" > settings.gradle
         
         cat << 'EOF' > build.gradle
@@ -34,7 +34,7 @@ jobs:
                 mavenCentral()
             }
             dependencies {
-                classpath 'com.android.tools.build:gradle:8.2.0'
+                classpath 'com.android.tools.build:gradle:7.4.2'
             }
         }
         allprojects {
@@ -46,16 +46,14 @@ jobs:
         EOF
         
         cat << 'EOF' > app/build.gradle
-        plugins {
-            id 'com.android.application'
-        }
+        apply plugin: 'com.android.application'
         android {
             namespace 'com.inversionespro.emocigat'
-            compileSdk 34
+            compileSdk 33
             defaultConfig {
                 applicationId 'com.inversionespro.emocigat'
                 minSdk 24
-                targetSdk 34
+                targetSdk 33
                 versionCode 1
                 versionName "1.0"
             }
