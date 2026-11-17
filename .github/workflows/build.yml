@@ -16,36 +16,21 @@ jobs:
 
     - name: Organizar y compilar
       run: |
-        mkdir -p app/src/main/java/com/invertirpro/emocigat
+        mkdir -p app/src/main/java/com/inversionespro/emocigat
         mkdir -p app/src/main/assets
         
-        # Mover archivos si existen a su ruta correcta
-        find . -maxdepth 1 -name "*.java" -exec cp {} app/src/main/java/com/invertirpro/emocigat/ \;
-        [ -f AndroidManifest.xml ] && cp AndroidManifest.xml app/src/main/
+        find . -maxdepth 1 -name "*.java" -exec cp {} app/src/main/java/com/inversionespro/emocigat/ \;
         [ -f emociones.json ] && cp emociones.json app/src/main/assets/
+        
+        printf '<manifest xmlns:android="http://schemas.android.com/apk/res/android">\n    <application android:allowBackup="true" android:label="EmociGat" android:theme="@style/Theme.AppCompat">\n        <activity android:name=".MainActivity" android:exported="true">\n            <intent-filter>\n                <action android:name="android.intent.action.MAIN" />\n                <category android:name="android.intent.category.LAUNCHER" />\n            </intent-filter>\n        </activity>\n        <service android:name=".EmociGatAccessibilityService" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:exported="true">\n            <intent-filter>\n                <action android:name="android.accessibilityservice.AccessibilityService" />\n            </intent-filter>\n        </service>\n    </application>\n</manifest>' > app/src/main/AndroidManifest.xml
         
         echo "include ':app'" > settings.gradle
         
-        cat << 'EOF' > build.gradle
-        buildscript {
-            repositories { google(); mavenCentral() }
-            dependencies { classpath 'com.android.tools.build:gradle:8.2.0' }
-        }
-        allprojects { repositories { google(); mavenCentral() } }
-        EOF
+        echo "buildscript { repositories { google(); mavenCentral() } dependencies { classpath 'com.android.tools.build:gradle:8.2.0' } } allprojects { repositories { google(); mavenCentral() } }" > build.gradle
         
-        cat << 'EOF' > app/build.gradle
-        apply plugin: 'com.android.application'
-        android {
-            namespace 'com.inversionespro.emocigat'
-            compileSdk 34
-            defaultConfig {
-                applicationId 'com.inversionespro.emocigat'
-                minSdk 24
-                targetSdk 34
-            }
-        }
-        EOF
+        echo "apply plugin: 'com.android.application'" > app/build.gradle
+        echo "android { namespace 'com.inversionespro.emocigat'; compileSdk 34; defaultConfig { applicationId 'com.inversionespro.emocigat'; minSdk 24; targetSdk 34 } }" >> app/build.gradle
+        echo "dependencies { implementation 'androidx.appcompat:appcompat:1.6.1' }" >> app/build.gradle
         
         gradle assembleDebug
 
