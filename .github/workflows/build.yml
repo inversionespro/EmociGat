@@ -1,4 +1,4 @@
-name: Compilar EmociGat Definitivo
+name: Compilar EmociGat Profesional
 
 on: [push]
 
@@ -8,34 +8,47 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Configurar Java
+    - name: Configurar Java 17
       uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Organizar y compilar
+    - name: Preparar estructura y dependencias de Android
       run: |
         mkdir -p app/src/main/java/com/inversionespro/emocigat
         mkdir -p app/src/main/assets
         
-        # Mueve los archivos sueltos de la raíz a la estructura de Android
-        cp *.java app/src/main/java/com/inversionespro/emocigat/ || true
+        # Mover archivos al directorio correcto si existen en la raíz
+        find . -maxdepth 1 -name "*.java" -exec cp {} app/src/main/java/com/inversionespro/emocigat/ \;
         [ -f AndroidManifest.xml ] && cp AndroidManifest.xml app/src/main/AndroidManifest.xml
         [ -f emociones.json ] && cp emociones.json app/src/main/assets/emociones.json
         
+        # Configuración limpia de Gradle
         echo "include ':app'" > settings.gradle
         
         cat << 'EOF' > build.gradle
         buildscript {
-            repositories { google(); mavenCentral() }
-            dependencies { classpath 'com.android.tools.build:gradle:8.1.4' }
+            repositories {
+                google()
+                mavenCentral()
+            }
+            dependencies {
+                classpath 'com.android.tools.build:gradle:8.2.0'
+            }
         }
-        allprojects { repositories { google(); mavenCentral() } }
+        allprojects {
+            repositories {
+                google()
+                mavenCentral()
+            }
+        }
         EOF
         
         cat << 'EOF' > app/build.gradle
-        apply plugin: 'com.android.application'
+        plugins {
+            id 'com.android.application'
+        }
         android {
             namespace 'com.inversionespro.emocigat'
             compileSdk 34
@@ -43,16 +56,20 @@ jobs:
                 applicationId 'com.inversionespro.emocigat'
                 minSdk 24
                 targetSdk 34
+                versionCode 1
+                versionName "1.0"
             }
         }
         dependencies {
             implementation 'androidx.appcompat:appcompat:1.6.1'
         }
         EOF
-        
-        gradle assembleDebug
 
-    - uses: actions/upload-artifact@v4
+    - name: Compilar APK de depuración
+      run: ./gradlew assembleDebug
+
+    - name: Subir artefacto APK
+      uses: actions/upload-artifact@v4
       with:
         name: EmociGat-APK-Final
         path: app/build/outputs/apk/debug/app-debug.apk
