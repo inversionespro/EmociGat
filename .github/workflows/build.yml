@@ -26,29 +26,9 @@ jobs:
         
         echo "include ':app'" > settings.gradle
         
-        cat << 'EOF' > build.gradle
-        buildscript {
-            repositories { google(); mavenCentral() }
-            dependencies { classpath 'com.android.tools.build:gradle:8.1.4' }
-        }
-        allprojects { repositories { google(); mavenCentral() } }
-        EOF
+        printf "buildscript {\n    repositories { google(); mavenCentral() }\n    dependencies { classpath 'com.android.tools.build:gradle:8.1.4' }\n}\nallprojects { repositories { google(); mavenCentral() } }\n" > build.gradle
         
-        cat << 'EOF' > app/build.gradle
-        apply plugin: 'com.android.application'
-        android {
-            namespace 'com.inversionespro.emocigat'
-            compileSdk 34
-            defaultConfig {
-                applicationId 'com.inversionespro.emocigat'
-                minSdk 24
-                targetSdk 34
-            }
-        }
-        dependencies {
-            implementation 'androidx.appcompat:appcompat:1.6.1'
-        }
-        EOF
+        printf "plugins {\n    id 'com.android.application'\n}\nandroid {\n    namespace 'com.inversionespro.emocigat'\n    compileSdk 34\n    defaultConfig {\n        applicationId 'com.inversionespro.emocigat'\n        minSdk 24\n        targetSdk 34\n    }\n}\ndependencies {\n    implementation 'androidx.appcompat:appcompat:1.6.1'\n}\n" > app/build.gradle
         
         echo "¡Estructura lista para empaquetar!"
         gradle assembleDebug
