@@ -37,10 +37,10 @@ jobs:
         cat << 'EOF' > app/build.gradle
         apply plugin: 'com.android.application'
         android {
-            namespace 'com.invertirpro.emocigat'
+            namespace 'com.inversionespro.emocigat'
             compileSdk 34
             defaultConfig {
-                applicationId 'com.invertirpro.emocigat'
+                applicationId 'com.inversionespro.emocigat'
                 minSdk 24
                 targetSdk 34
             }
