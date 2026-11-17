@@ -26,7 +26,7 @@ jobs:
         
         echo "include ':app'" > settings.gradle
         
-        printf "buildscript {\n    repositories { google(); mavenCentral() }\n    dependencies { classpath 'com.android.tools.build:gradle:8.1.4' }\n}\nallprojects { repositories { google(); mavenCentral() } }\n" > build.gradle
+        printf "plugins {\n    id 'com.android.application' version '8.2.0' apply false\n}\n" > build.gradle
         
         printf "plugins {\n    id 'com.android.application'\n}\nandroid {\n    namespace 'com.inversionespro.emocigat'\n    compileSdk 34\n    defaultConfig {\n        applicationId 'com.inversionespro.emocigat'\n        minSdk 24\n        targetSdk 34\n    }\n}\ndependencies {\n    implementation 'androidx.appcompat:appcompat:1.6.1'\n}\n" > app/build.gradle
         
