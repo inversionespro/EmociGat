@@ -66,7 +66,7 @@ jobs:
         EOF
 
     - name: Compilar APK de depuración
-      run: ./gradlew assembleDebug
+      run: gradle assembleDebug
 
     - name: Subir artefacto APK
       uses: actions/upload-artifact@v4
